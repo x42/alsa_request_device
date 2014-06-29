@@ -1,4 +1,4 @@
-PREFIX ?= /usr/local                                                                                                                           
+PREFIX ?= /usr/local
 bindir ?= $(PREFIX)/bin
 mandir ?= $(PREFIX)/share/man
 
