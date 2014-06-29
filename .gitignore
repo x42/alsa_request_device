@@ -1,0 +1,5 @@
+alsa_request_device
+
+*.swp
+cscope.*
+tags
