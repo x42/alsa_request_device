@@ -71,7 +71,7 @@ static void print_version(int status) {
 
 static void usage(int status) {
 	printf (ARD_PROG_NAME " - DBus Audio Reservation Utility.\n");
-	printf ("Usage: " ARD_PROG_NAME " [ OPTIONS ] <Audio-Device-ID>\n");
+	printf ("Usage: " ARD_PROG_NAME " [ OPTIONS ] <Audio-Device>\n");
 	printf ("Options:\n\
       -h, --help                 display this help and exit\n\
       -p, --priority <int>       reservation priority (default: int32_max)\n\
@@ -99,10 +99,13 @@ Without the -w option, " ARD_PROG_NAME " yields the device after 500ms to\n\
 any higher-priority request. With the -w option this tool waits until it\n\
 for SIGINT or SIGTERM - but at most 4 sec to acknowledge before releasing.\n\
 \n\
-The audio-device-id is a string e.g. 'Audio1'\n\
+The audio-device argument is an ID string e.g. 'Audio1' (as understood by\n\
+dbus) or alternatively an ALSA hardware name e.g. 'hw:SB' may be given.\n\
 \n\
 Examples:\n\
 " ARD_PROG_NAME " Audio0\n\
+\n\
+" ARD_PROG_NAME " hw:0\n\
 \n");
 
 	printf ("Report bugs to Robin Gareus <robin@gareus.org>\n");
