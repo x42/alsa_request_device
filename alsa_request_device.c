@@ -20,6 +20,8 @@
 // NB generate man-page with
 // help2man -N -n "alsa/ardour dbus device request tool" -o ardour-request-device.1 ./build/libs/ardouralsautil/ardour-request-device
 
+#include <alsa/asoundlib.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -143,6 +145,43 @@ static int request_cb(rd_device *d, int forced) {
 	return 1; // OK
 }
 
+static int
+card_to_num(const char* device_name)
+{
+	char* ctl_name;
+	const char * comma;
+	snd_ctl_t* ctl_handle;
+	int i = -1;
+
+	if (strncasecmp(device_name, "plughw:", 7) == 0) {
+		device_name += 4;
+	}
+	if (!(comma = strchr(device_name, ','))) {
+		ctl_name = strdup(device_name);
+	} else {
+		ctl_name = strndup(device_name, comma - device_name);
+	}
+
+	if (snd_ctl_open (&ctl_handle, ctl_name, 0) >= 0) {
+		snd_ctl_card_info_t *card_info;
+		snd_ctl_card_info_alloca (&card_info);
+		if (snd_ctl_card_info(ctl_handle, card_info) >= 0) {
+			i = snd_ctl_card_info_get_card(card_info);
+		}
+		snd_ctl_close(ctl_handle);
+	}
+	free(ctl_name);
+	return i;
+}
+
+static const char * alsa_translate_device_name (const char* device_name)
+{
+        int number = card_to_num (device_name);
+        char buf[8];
+        snprintf (buf, sizeof (buf), "Audio%d", number);
+        return strdup (buf);
+}
+
 int main(int argc, char **argv) {
 	DBusConnection* dbus_connection = NULL;
 	rd_device * reserved_device = NULL;
@@ -196,6 +235,10 @@ int main(int argc, char **argv) {
 		usage(EXIT_FAILURE);
 	}
 	const char *device_name = argv[optind];
+
+        if (strncmp (device_name, "Audio", 5) != 0) {
+                device_name = alsa_translate_device_name (device_name);
+        }
 
 	if (parent_pid > 0 && kill (parent_pid, 0)) {
 		fprintf(stderr, "Given PID to watch is not running.\n");
