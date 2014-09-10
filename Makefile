@@ -3,7 +3,7 @@ bindir ?= $(PREFIX)/bin
 mandir ?= $(PREFIX)/share/man
 
 CFLAGS ?= -Wall -O3 -g
-VERSION?=$(shell (git describe --tags HEAD 2>/dev/null || echo "v0.3") | sed 's/^v//')
+VERSION?=$(shell (git describe --tags HEAD 2>/dev/null || echo "v0.4") | sed 's/^v//')
 
 ifeq ($(shell pkg-config --exists alsa || echo no), no)
   $(warning *** libasound from http://www.alsa-project.org/ is required)
